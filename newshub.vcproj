@@ -178,12 +178,44 @@
 				RelativePath=".\src\main.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\src\message_info.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\time_stamp.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\src\connected_server.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\message_info.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\news_delegate.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\server.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\time_stamp.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\udp_server.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
