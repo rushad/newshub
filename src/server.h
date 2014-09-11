@@ -1,6 +1,6 @@
 #pragma once
 
-#include "hub_delegate.h"
+#include "socket.h"
 
 namespace NewsHub
 {
@@ -11,6 +11,6 @@ namespace NewsHub
     {
     }
 
-    ConnectedServer* Listen(const ServerParameters & params);
+    virtual Socket* Listen() = 0;
   };
 }

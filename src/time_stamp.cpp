@@ -8,7 +8,7 @@ namespace NewsHub
   }
 
   TimeStamp::TimeStamp()
-    : timeValue(time(NULL))
+    : timeValue(time(0))
   {
   }
 }
