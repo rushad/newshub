@@ -12,7 +12,14 @@ namespace NewsHub
 
   ServerThreadLoop::~ServerThreadLoop()
   {
-    std::cout << "~ServerThreadLoop()" << std::endl;
+    while (!socketThreadLoops.empty())
+    {
+      delete socketThreadLoops.front();
+      socketThreadLoops.pop_front();
+
+      delete sockets.front();
+      sockets.pop_front();
+    }
   }
 
   bool ServerThreadLoop::LoopBody()
@@ -20,7 +27,12 @@ namespace NewsHub
     Socket* socket = server.Listen();
 
     if (socket)
+    {
       SocketThreadLoop* socketThreadLoop = new SocketThreadLoop(*socket);
+
+      sockets.push_back(socket);
+      socketThreadLoops.push_back(socketThreadLoop);
+    }
 
     return true;
   }

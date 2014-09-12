@@ -2,6 +2,7 @@
 
 #include "message_info.h"
 #include "server_thread_loop.h"
+#include "tcp_client.h"
 #include "tcp_server.h"
 #include "tcp_socket.h"
 
@@ -24,8 +25,26 @@ int main(int argc, char* argv[])
     NewsHub::ServerThreadLoop tcpServerLoop1(server1);
     NewsHub::ServerThreadLoop tcpServerLoop2(server2);
     NewsHub::ServerThreadLoop tcpServerLoop3(server3);
-    Sleep(100000);
+
+    Sleep(1000);
+
+    NewsHub::Socket* client1 = NewsHub::TcpClient("localhost", 12345).Connect();
+    NewsHub::Socket* client2 = NewsHub::TcpClient("localhost", 12346).Connect();
+    NewsHub::Socket* client3 = NewsHub::TcpClient("localhost", 12347).Connect();
+
+    std::string msg;
+    std::cin >> msg;
+    client1->Write(msg);
+    std::cin >> msg;
+    client2->Write(msg);
+    std::cin >> msg;
+    client3->Write(msg);
+
+    Sleep(10000);
     std::cout << "About to finish app..." << std::endl;
+    delete client1;
+    delete client2;
+    delete client3;
   }
   catch (const std::exception & e)
   {

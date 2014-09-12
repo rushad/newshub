@@ -3,6 +3,10 @@
 #include "thread_loop.h"
 
 #include "server.h"
+#include "socket.h"
+#include "socket_thread_loop.h"
+
+#include <list>
 
 namespace NewsHub
 {
@@ -15,5 +19,7 @@ namespace NewsHub
 
   private:
     Server & server;
+    std::list<Socket*> sockets;
+    std::list<SocketThreadLoop*> socketThreadLoops;
   };
 }

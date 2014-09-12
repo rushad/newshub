@@ -15,10 +15,10 @@ namespace NewsHub
 
   bool SocketThreadLoop::LoopBody()
   {
-    MessageInfo mi;
-    if (!socket.Read(&mi))
+    std::string res;
+    if (!socket.Read(&res))
       return false;
-    std::cout << mi.message;
+    std::cout << res;
     return true;
   }
 }

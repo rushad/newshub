@@ -16,7 +16,6 @@ namespace NewsHub
 
   ThreadLoop::~ThreadLoop()
   {
-    std::cout << "~ThreadLoop()" << std::endl;
     stop();
     pthread_join(threadId, 0);
     pthread_mutex_destroy(&mutexStop);
