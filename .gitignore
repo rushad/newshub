@@ -6,3 +6,6 @@
 /debug
 /release
 /newshubui/release
+/newshubui/Debug
+/newshubui/*.aps
+/newshubui/*.user
