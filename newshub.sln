@@ -3,6 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "newshub", "newshub.vcproj", "{649ADD49-1983-4936-8A4A-8F12356E0482}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "newshubui", "newshubui\newshubui.vcproj", "{82A1BED0-C502-4B7A-BF7B-93AC098ED049}"
+	ProjectSection(ProjectDependencies) = postProject
+		{649ADD49-1983-4936-8A4A-8F12356E0482} = {649ADD49-1983-4936-8A4A-8F12356E0482}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -13,6 +18,10 @@ Global
 		{649ADD49-1983-4936-8A4A-8F12356E0482}.Debug|Win32.Build.0 = Debug|Win32
 		{649ADD49-1983-4936-8A4A-8F12356E0482}.Release|Win32.ActiveCfg = Release|Win32
 		{649ADD49-1983-4936-8A4A-8F12356E0482}.Release|Win32.Build.0 = Release|Win32
+		{82A1BED0-C502-4B7A-BF7B-93AC098ED049}.Debug|Win32.ActiveCfg = Debug|Win32
+		{82A1BED0-C502-4B7A-BF7B-93AC098ED049}.Debug|Win32.Build.0 = Debug|Win32
+		{82A1BED0-C502-4B7A-BF7B-93AC098ED049}.Release|Win32.ActiveCfg = Release|Win32
+		{82A1BED0-C502-4B7A-BF7B-93AC098ED049}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

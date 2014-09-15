@@ -2,7 +2,6 @@
 #include "tcp_socket.h"
 
 #include <exception>
-#include <iostream>
 
 namespace NewsHub
 {
@@ -31,7 +30,6 @@ namespace NewsHub
 
   TcpServer::~TcpServer()
   {
-    std::cout << "~TcpServer()" << std::endl;
     closesocket(serverSocket);
   }
 

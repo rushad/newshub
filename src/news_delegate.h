@@ -1,6 +1,6 @@
 #pragma once
 
-#include "message_info.h"
+#include <string>
 
 namespace NewsHub
 {
@@ -11,6 +11,6 @@ namespace NewsHub
     {
     }
 
-    void Message(const MessageInfo & messageInfo) = 0;
+    virtual void Message(const std::string & message) = 0;
   };
 }

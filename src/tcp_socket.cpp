@@ -24,8 +24,9 @@ namespace NewsHub
     if (!readHeader(&header))
       return false;
 
-    std::string res = readData(header.length());
-    if (res == "")
+    bool ok;
+    std::string res = readData(header.length(), ok);
+    if (!ok)
       return false;
 
     *data = res;
@@ -78,16 +79,15 @@ namespace NewsHub
     return true;
   }
 
-  std::string TcpSocket::readData(int len)
+  std::string TcpSocket::readData(int len, bool & ok)
   {
     char data[0xffff];
     int read = 0;
 
-    while (read < len)
-    {
-      if (IsStopped())
-        return "";
+    ok = false;
 
+    while ((read < len) && !IsStopped())
+    {
       if (waitForData(defTcpSocketTimeout))
       {
         int res = recv(socket, data + read, len - read, 0);
@@ -100,6 +100,7 @@ namespace NewsHub
     if (read != len)
       return "";
 
+    ok = true;
     return std::string(data, read);
   }
 

@@ -23,7 +23,7 @@ namespace NewsHub
 
     bool waitForData(int msec);
     bool readHeader(PacketHeader* header);
-    std::string readData(int len);
+    std::string readData(int len, bool & ok);
 
     SOCKET socket;
 

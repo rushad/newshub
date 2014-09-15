@@ -5,8 +5,9 @@
 
 namespace NewsHub
 {
-  ServerThreadLoop::ServerThreadLoop(Server & _server)
-    : server(_server)
+  ServerThreadLoop::ServerThreadLoop(Server & _server, NewsDelegate & _newsDelegate)
+    : server(_server),
+      newsDelegate(_newsDelegate)
   {
   }
 
@@ -28,7 +29,7 @@ namespace NewsHub
 
     if (socket)
     {
-      SocketThreadLoop* socketThreadLoop = new SocketThreadLoop(*socket);
+      SocketThreadLoop* socketThreadLoop = new SocketThreadLoop(*socket, newsDelegate);
 
       sockets.push_back(socket);
       socketThreadLoops.push_back(socketThreadLoop);

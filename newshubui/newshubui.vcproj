@@ -2,10 +2,10 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="newshub"
-	ProjectGUID="{649ADD49-1983-4936-8A4A-8F12356E0482}"
-	RootNamespace="newshub"
-	Keyword="Win32Proj"
+	Name="newshubui"
+	ProjectGUID="{82A1BED0-C502-4B7A-BF7B-93AC098ED049}"
+	RootNamespace="newshubui"
+	Keyword="MFCProj"
 	>
 	<Platforms>
 		<Platform
@@ -19,7 +19,8 @@
 			Name="Debug|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="4"
+			ConfigurationType="1"
+			UseOfMFC="1"
 			CharacterSet="1"
 			>
 			<Tool
@@ -36,33 +37,48 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				MkTypLibCompatible="false"
+				ValidateParameters="false"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
+				AdditionalIncludeDirectories="C:\Work\newshub\src"
+				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
-				UsePrecompiledHeader="0"
+				UsePrecompiledHeader="2"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="3"
+				DebugInformationFormat="4"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
-				Name="VCLibrarianTool"
+				Name="VCLinkerTool"
+				AdditionalDependencies="pthreadVCE2.lib"
+				LinkIncremental="2"
+				GenerateDebugInformation="true"
+				SubSystem="2"
+				TargetMachine="1"
 			/>
 			<Tool
 				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -74,6 +90,12 @@
 				Name="VCFxCopTool"
 			/>
 			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
@@ -81,7 +103,8 @@
 			Name="Release|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="4"
+			ConfigurationType="1"
+			UseOfMFC="1"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
 			>
@@ -99,12 +122,17 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="false"
+				ValidateParameters="false"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
+				AdditionalIncludeDirectories="C:\Work\newshub\src"
+				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG"
+				MinimalRebuild="false"
 				RuntimeLibrary="0"
-				UsePrecompiledHeader="0"
+				UsePrecompiledHeader="2"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
@@ -114,15 +142,28 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
-				Name="VCLibrarianTool"
+				Name="VCLinkerTool"
+				AdditionalDependencies="pthreadVCE2.lib"
+				LinkIncremental="1"
+				GenerateDebugInformation="true"
+				SubSystem="2"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				TargetMachine="1"
 			/>
 			<Tool
 				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -134,31 +175,17 @@
 				Name="VCFxCopTool"
 			/>
 			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
 	</Configurations>
 	<References>
-		<AssemblyReference
-			RelativePath="System.dll"
-			AssemblyName="System, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
-		/>
-		<AssemblyReference
-			RelativePath="System.Data.dll"
-			AssemblyName="System.Data, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=x86"
-		/>
-		<AssemblyReference
-			RelativePath="System.Drawing.dll"
-			AssemblyName="System.Drawing, Version=2.0.0.0, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL"
-		/>
-		<AssemblyReference
-			RelativePath="System.Windows.Forms.dll"
-			AssemblyName="System.Windows.Forms, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
-		/>
-		<AssemblyReference
-			RelativePath="System.XML.dll"
-			AssemblyName="System.Xml, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
-		/>
 	</References>
 	<Files>
 		<Filter
@@ -167,36 +194,36 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\src\server_thread_loop.cpp"
+				RelativePath=".\newshubui.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\socket.cpp"
+				RelativePath=".\newshubuiDlg.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\socket_thread_loop.cpp"
+				RelativePath=".\serverLoop.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\tcp_client.cpp"
+				RelativePath=".\stdafx.cpp"
 				>
-			</File>
-			<File
-				RelativePath=".\src\tcp_server.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\tcp_socket.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\thread_loop.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\time_stamp.cpp"
-				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
@@ -205,51 +232,23 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\src\client.h"
+				RelativePath=".\newshubui.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\news_delegate.h"
+				RelativePath=".\newshubuiDlg.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\protocol.h"
+				RelativePath=".\Resource.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\server.h"
+				RelativePath=".\serverLoop.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\server_thread_loop.h"
-				>
-			</File>
-			<File
-				RelativePath=".\src\socket.h"
-				>
-			</File>
-			<File
-				RelativePath=".\src\socket_thread_loop.h"
-				>
-			</File>
-			<File
-				RelativePath=".\src\tcp_client.h"
-				>
-			</File>
-			<File
-				RelativePath=".\src\tcp_server.h"
-				>
-			</File>
-			<File
-				RelativePath=".\src\tcp_socket.h"
-				>
-			</File>
-			<File
-				RelativePath=".\src\thread_loop.h"
-				>
-			</File>
-			<File
-				RelativePath=".\src\time_stamp.h"
+				RelativePath=".\stdafx.h"
 				>
 			</File>
 		</Filter>
@@ -258,8 +257,28 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
+			<File
+				RelativePath=".\res\newshubui.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\newshubui.rc"
+				>
+			</File>
+			<File
+				RelativePath=".\res\newshubui.rc2"
+				>
+			</File>
 		</Filter>
+		<File
+			RelativePath=".\ReadMe.txt"
+			>
+		</File>
 	</Files>
 	<Globals>
+		<Global
+			Name="RESOURCE_FILE"
+			Value="newshubui.rc"
+		/>
 	</Globals>
 </VisualStudioProject>

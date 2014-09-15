@@ -4,8 +4,9 @@
 
 namespace NewsHub
 {
-  SocketThreadLoop::SocketThreadLoop(Socket & _socket)
-    : socket(_socket)
+  SocketThreadLoop::SocketThreadLoop(Socket & _socket, NewsDelegate & _newsDelegate)
+    : socket(_socket),
+      newsDelegate(_newsDelegate)
   {
   }
 
@@ -18,7 +19,10 @@ namespace NewsHub
     std::string res;
     if (!socket.Read(&res))
       return false;
-    std::cout << res;
+    if (!res.empty())
+    {
+      newsDelegate.Message(res);
+    }
     return true;
   }
 }

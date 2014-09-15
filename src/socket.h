@@ -1,12 +1,12 @@
 #pragma once
 
-#include "message_info.h"
-
 #include <pthread.h>
 
 #ifdef WIN32
 #include <winsock.h>
 #endif
+
+#include <string>
 
 namespace NewsHub
 {
