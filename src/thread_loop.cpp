@@ -14,13 +14,6 @@ namespace NewsHub
       throw std::exception("pthread_create() failed");
   }
 
-  ThreadLoop::~ThreadLoop()
-  {
-    stop();
-    pthread_join(threadId, 0);
-    pthread_mutex_destroy(&mutexStop);
-  }
-
   bool ThreadLoop::isStopped() const
   {
     bool res;
@@ -50,5 +43,12 @@ namespace NewsHub
     }
 
     return 0;
+  }
+
+  void ThreadLoop::Finish()
+  {
+    stop();
+    pthread_join(threadId, 0);
+    pthread_mutex_destroy(&mutexStop);
   }
 }

@@ -27,7 +27,7 @@ namespace NewsHub
     if (connect(clientSocket, (struct sockaddr *) &serverAddr, sizeof(serverAddr)) < 0)
     {
       closesocket(clientSocket);
-      throw std::exception("connect() failed");
+      return 0;
     }
 
     return new TcpSocket(clientSocket);  

@@ -1,5 +1,6 @@
 #pragma once
 
+
 namespace NewsHub
 {
   const char PacketSignature[] = "NH";
@@ -9,20 +10,26 @@ namespace NewsHub
   {
     char sig[2];
     unsigned short len;
+    unsigned int id;
     PacketHeader()
     {
     }
-    PacketHeader(const std::string & data)
+    PacketHeader(unsigned __int32 _id, const std::string & data)
     {
       if (data.size() > 0xffff)
         throw std::exception("Too large packet size");
 
       memcpy(sig, PacketSignature, sizeof(sig));
-      len = htons((short)data.size());
+      len = htons((int)data.size());
+      id = htonl(_id);
     }
     int length()
     {
       return ntohs(len);
+    }
+    unsigned int messageId()
+    {
+      return ntohl(id);
     }
   };
 #pragma pack(pop)

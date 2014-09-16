@@ -7,9 +7,11 @@
 
 #include "serverLoop.h"
 
+#include "client_queue_thread_loop.h"
 #include "server_thread_loop.h"
 #include "tcp_client.h"
 #include "tcp_server.h"
+#include "tcp_socket.h"
 
 #include <iostream>
 
@@ -20,7 +22,8 @@
 // CNewsHubDlg dialog
 
 CNewsHubDlg::CNewsHubDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CNewsHubDlg::IDD, pParent)
+	: CDialog(CNewsHubDlg::IDD, pParent),
+    messageId(0)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -29,10 +32,19 @@ CNewsHubDlg::~CNewsHubDlg()
 {
 }
 
-void CNewsHubDlg::Message(const std::string & message)
+void CNewsHubDlg::Message(const NewsHub::Socket & socket, const unsigned int messageId, const std::string & message)
 {
   CListBox* pReceivedMessages = (CListBox*)GetDlgItem(IDC_RECEIVED_MESSAGES);
-  pReceivedMessages->AddString(CA2CT(message.c_str()));
+  CString str;
+  std::string from, to;
+  int fromPort, toPort;
+  NewsHub::TcpSocket* tcpSocket = (NewsHub::TcpSocket*)&socket;
+  tcpSocket->SockAddr(to, toPort);
+  tcpSocket->PeerAddr(from, fromPort);
+  str.Format(_T("(From: %s:%d to: %s:%d msgId:%d): %s"), 
+    CString(CA2CT(from.c_str())), fromPort, CString(CA2CT(to.c_str())), toPort, messageId, CString(CA2CT(message.c_str())));
+  int row = pReceivedMessages->AddString(str);
+  pReceivedMessages->SetCurSel(row);
 }
 
 void CNewsHubDlg::DoDataExchange(CDataExchange* pDX)
@@ -131,12 +143,12 @@ void CNewsHubDlg::onClose()
     delete serverLoop;
   }
 
-  std::map<CString, NewsHub::Socket*>::iterator itSocket;
+/*  std::map<CString, NewsHub::Socket*>::iterator itSocket;
   for (itSocket = clientSockets.begin(); itSocket != clientSockets.end(); itSocket++)
-    delete itSocket->second;
+    delete itSocket->second;*/
 }
 
-CString CNewsHubDlg::getSocketId() const
+CString CNewsHubDlg::getDestinationId() const
 {
   CEdit* pHost = (CEdit*)GetDlgItem(IDC_HOST);
   CEdit* pPort = (CEdit*)GetDlgItem(IDC_PORT);
@@ -196,11 +208,11 @@ void CNewsHubDlg::OnBnClickedFinish()
 
 void CNewsHubDlg::OnBnClickedSend()
 {
-  CString socketId = getSocketId();
-  NewsHub::Socket *socket;
+  CString destinationId = getDestinationId();
+  NewsHub::ClientQueueThreadLoop *queue;
 
-  std::map<CString, NewsHub::Socket*>::const_iterator itSocket = clientSockets.find(socketId);
-  if (itSocket == clientSockets.end())
+  std::map<CString, NewsHub::ClientQueueThreadLoop*>::iterator itQueue = clientQueues.find(destinationId);
+  if (itQueue == clientQueues.end())
   {
     CEdit* pHost = (CEdit*)GetDlgItem(IDC_HOST);
     CEdit* pPort = (CEdit*)GetDlgItem(IDC_PORT);
@@ -211,7 +223,8 @@ void CNewsHubDlg::OnBnClickedSend()
 
     try
     {
-      socket = NewsHub::TcpClient(std::string(CT2CA(host)), atoi(CT2CA(port))).Connect();
+      NewsHub::TcpClient* client = new NewsHub::TcpClient(std::string(CT2CA(host)), atoi(CT2CA(port)));
+      queue = new NewsHub::ClientQueueThreadLoop(*client);
     }
     catch (std::exception & e)
     {
@@ -219,15 +232,16 @@ void CNewsHubDlg::OnBnClickedSend()
       return;
     }
 
-    clientSockets.insert(std::pair<CString, NewsHub::Socket*>(socketId, socket));
+    itQueue = clientQueues.insert(std::pair<CString, NewsHub::ClientQueueThreadLoop*>(destinationId, queue)).first;
   }
   else
   {
-    socket = itSocket->second;
+    queue = itQueue->second;
   }
 
   CEdit* pMessage = (CEdit*)GetDlgItem(IDC_MESSAGE);
   CString message;
   pMessage->GetWindowText(message);
-  socket->Write(std::string(CT2CA(message)));
+  std::cout << "> " << CT2CA(message) << std::endl;
+  queue->AddMessage(++messageId, std::string(CT2CA(message)));
 }

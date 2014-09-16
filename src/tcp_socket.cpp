@@ -15,13 +15,10 @@ namespace NewsHub
     closesocket(socket);
   }
 
-  bool TcpSocket::Read(std::string* data)
+  bool TcpSocket::Read(unsigned int & messageId, std::string & message)
   {
-    if (!waitForData(defTcpSocketTimeout))
-      return true;
-
     PacketHeader header;
-    if (!readHeader(&header))
+    if (!readHeader(header))
       return false;
 
     bool ok;
@@ -29,18 +26,41 @@ namespace NewsHub
     if (!ok)
       return false;
 
-    *data = res;
+    messageId = header.messageId();
+    message = res;
     return true;
   }
 
-  bool TcpSocket::Write(std::string data)
+  bool TcpSocket::Write(const unsigned int messageId, const std::string & message)
   {
-    PacketHeader header(data);
+    PacketHeader header(messageId, message);
 
-    send(socket, (char*)&header, sizeof(header), 0);
-    send(socket, data.c_str(), (int)data.size(), 0);
+    if (send(socket, (char*)&header, sizeof(header), 0) < 0)
+      return false;
+    if (send(socket, message.c_str(), header.length(), 0) < 0)
+      return false;
 
     return true;
+  }
+
+  void TcpSocket::SockAddr(std::string & ip, int & port) const
+  {
+    struct sockaddr_in addr;
+    int len = sizeof(addr);
+    if (getsockname(socket, (struct sockaddr*)&addr, &len) < 0)
+      throw std::exception("getsockname() failed");
+    ip = inet_ntoa(addr.sin_addr);
+    port = ntohs(addr.sin_port);
+  }
+
+  void TcpSocket::PeerAddr(std::string & ip, int & port) const
+  {
+    struct sockaddr_in addr;
+    int len = sizeof(addr);
+    if (getpeername(socket, (struct sockaddr*)&addr, &len) < 0)
+      throw std::exception("getpeername() failed");
+    ip = inet_ntoa(addr.sin_addr);
+    port = ntohs(addr.sin_port);
   }
 
   bool TcpSocket::waitForData(int msec)
@@ -48,32 +68,39 @@ namespace NewsHub
     fd_set rfds;
     struct timeval tv;
 
-    FD_ZERO(&rfds);
-    FD_SET(socket, &rfds);
-
-    tv.tv_sec = msec / 1000;
-    tv.tv_usec = (msec % 1000) * 1000;
-
     int res;
-    if ((res = select((int)socket + 1, &rfds, 0, 0, &tv)) < 0)
-      throw std::exception("select() failed");
+    do
+    {
+      if (IsStopped())
+        return false;
 
-    return res ? true : false;
+      FD_ZERO(&rfds);
+      FD_SET(socket, &rfds);
+
+      tv.tv_sec = msec / 1000;
+      tv.tv_usec = (msec % 1000) * 1000;
+
+      if ((res = select((int)socket + 1, &rfds, 0, 0, &tv)) < 0)
+        throw std::exception("select() failed");
+
+    } while (!res);
+
+    return true;
   }
 
-  bool TcpSocket::readHeader(PacketHeader* header)
+  bool TcpSocket::readHeader(PacketHeader & header)
   {
-    int res = recv(socket, (char*)header, sizeof(*header), 0);
+    if (!waitForData(defTcpSocketTimeout))
+      return false;
+
+    int res = recv(socket, (char*)&header, sizeof(header), 0);
     if (res < 0)
       throw std::exception("recv() failed");
-
-    if (!res)
-      return false;
 
     if (res != sizeof(PacketHeader))
       return false;
 
-    if (strcmp(PacketSignature, header->sig))
+    if (strcmp(PacketSignature, header.sig))
       return false;
 
     return true;
@@ -86,16 +113,18 @@ namespace NewsHub
 
     ok = false;
 
-    while ((read < len) && !IsStopped())
+    do 
     {
-      if (waitForData(defTcpSocketTimeout))
-      {
-        int res = recv(socket, data + read, len - read, 0);
-        if (res < 0)
-          throw std::exception("recv() failed");
-        read += res;
-      }
-    }
+      if (!waitForData(defTcpSocketTimeout))
+        return "";
+
+      int res = recv(socket, data + read, len - read, 0);
+      if (res < 0)
+        throw std::exception("recv() failed");
+
+      read += res;
+
+    } while (read < len);
 
     if (read != len)
       return "";

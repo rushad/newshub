@@ -8,10 +8,13 @@ namespace NewsHub
   {
   public:
     ThreadLoop();
-    virtual ~ThreadLoop();
+    virtual ~ThreadLoop()
+    {
+    }
 
   protected:
     virtual bool LoopBody() = 0;
+    void Finish();
 
   private:
     pthread_t threadId;
@@ -23,5 +26,6 @@ namespace NewsHub
     void stop();
 
     static void* run(void* data);
+
   };
 }

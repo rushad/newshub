@@ -14,15 +14,18 @@ namespace NewsHub
     explicit TcpSocket(SOCKET _socket);
     ~TcpSocket();
 
-    virtual bool Read(std::string* data);
-    virtual bool Write(std::string data);
+    virtual bool Read(unsigned int & messageId, std::string & message);
+    virtual bool Write(const unsigned int messageId, const std::string & message);
+
+    void SockAddr(std::string & ip, int & port) const;
+    void PeerAddr(std::string & ip, int & port) const;
 
   private:
     TcpSocket();
     TcpSocket(const TcpSocket &);
 
     bool waitForData(int msec);
-    bool readHeader(PacketHeader* header);
+    bool readHeader(PacketHeader & header);
     std::string readData(int len, bool & ok);
 
     SOCKET socket;

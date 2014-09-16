@@ -167,6 +167,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\src\client_queue_thread_loop.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\server_thread_loop.cpp"
 				>
 			</File>
@@ -194,10 +198,6 @@
 				RelativePath=".\src\thread_loop.cpp"
 				>
 			</File>
-			<File
-				RelativePath=".\src\time_stamp.cpp"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -206,6 +206,10 @@
 			>
 			<File
 				RelativePath=".\src\client.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\client_queue_thread_loop.h"
 				>
 			</File>
 			<File
@@ -246,10 +250,6 @@
 			</File>
 			<File
 				RelativePath=".\src\thread_loop.h"
-				>
-			</File>
-			<File
-				RelativePath=".\src\time_stamp.h"
 				>
 			</File>
 		</Filter>

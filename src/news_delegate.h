@@ -1,5 +1,7 @@
 #pragma once
 
+#include "socket.h"
+
 #include <string>
 
 namespace NewsHub
@@ -11,6 +13,6 @@ namespace NewsHub
     {
     }
 
-    virtual void Message(const std::string & message) = 0;
+    virtual void Message(const Socket & socket, const unsigned int messageId, const std::string & message) = 0;
   };
 }

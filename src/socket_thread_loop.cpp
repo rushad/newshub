@@ -1,7 +1,5 @@
 #include "socket_thread_loop.h"
 
-#include <iostream>
-
 namespace NewsHub
 {
   SocketThreadLoop::SocketThreadLoop(Socket & _socket, NewsDelegate & _newsDelegate)
@@ -12,17 +10,20 @@ namespace NewsHub
 
   SocketThreadLoop::~SocketThreadLoop()
   {
+    socket.Stop();
+    Finish();
   }
 
   bool SocketThreadLoop::LoopBody()
   {
+    unsigned int messageId;
     std::string res;
-    if (!socket.Read(&res))
+
+    if (!socket.Read(messageId, res))
       return false;
-    if (!res.empty())
-    {
-      newsDelegate.Message(res);
-    }
+
+    newsDelegate.Message(socket, messageId, res);
+
     return true;
   }
 }

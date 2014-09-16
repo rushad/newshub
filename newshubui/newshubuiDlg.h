@@ -4,6 +4,8 @@
 #pragma once
 
 #include "news_delegate.h"
+
+#include "client_queue_thread_loop.h"
 #include "socket.h"
 
 #include <map>
@@ -16,7 +18,7 @@ public:
 	CNewsHubDlg(CWnd* pParent = NULL);	// standard constructor
   ~CNewsHubDlg();
 
-  virtual void Message(const std::string & message);
+  virtual void Message(const NewsHub::Socket & socket, const unsigned int messageId, const std::string & message);
 
   // Dialog Data
 	enum { IDD = IDD_NEWSHUBUI_DIALOG };
@@ -38,10 +40,11 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 private:
-  std::map<CString, NewsHub::Socket*> clientSockets;
+  std::map<CString, NewsHub::ClientQueueThreadLoop*> clientQueues;
+  unsigned int messageId;
 
   void onClose();
-  CString getSocketId() const;
+  CString getDestinationId() const;
 
 public:
   afx_msg void OnBnClickedServerStart();

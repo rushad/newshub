@@ -21,6 +21,7 @@ namespace NewsHub
       delete sockets.front();
       sockets.pop_front();
     }
+    Finish();
   }
 
   bool ServerThreadLoop::LoopBody()
