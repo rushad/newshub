@@ -48,8 +48,8 @@ namespace NewsHub
     }
 
     popMessage();
-    std::cout << "Sent " << messageId << ": " << message << std::endl;
 
+    std::cout << "Sent " << messageId << ": " << message << std::endl;
     return true;
   }
 
