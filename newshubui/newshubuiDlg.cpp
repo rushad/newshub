@@ -186,7 +186,7 @@ void CNewsHubDlg::OnBnClickedServerStart()
     return;
   }
 
-  CString serverDescription = CString("TCP server listening on port ") + strPort; 
+  CString serverDescription = CString("TCP server is listening on port ") + strPort; 
 
   CListBox* pRunningServers = (CListBox*)GetDlgItem(IDC_RUNNING_SERVERS);
   int row = pRunningServers->AddString(serverDescription);
@@ -242,6 +242,5 @@ void CNewsHubDlg::OnBnClickedSend()
   CEdit* pMessage = (CEdit*)GetDlgItem(IDC_MESSAGE);
   CString message;
   pMessage->GetWindowText(message);
-  std::cout << "> " << CT2CA(message) << std::endl;
   queue->AddMessage(++messageId, std::string(CT2CA(message)));
 }
