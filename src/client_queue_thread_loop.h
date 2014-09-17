@@ -31,7 +31,7 @@ namespace NewsHub
     std::queue<Message> queue;
     mutable pthread_mutex_t mutexQueue;
 
-    bool nextMessage(unsigned int & messageId, std::string message);
+    bool nextMessage(unsigned int & messageId, std::string & message);
     void popMessage();
   };
 }

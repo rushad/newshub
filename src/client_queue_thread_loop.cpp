@@ -41,11 +41,21 @@ namespace NewsHub
     if (!socket && !(socket = client.Connect()))
       return true;
 
-    if(!socket->Write(messageId, message))
+    if (!socket->Write(messageId, message))
     {
       delete socket;
       socket = 0;
+	  return true;
     }
+
+	unsigned int answerMessageId;
+	std::string answerMessage;
+	if (!socket->Read(answerMessageId, answerMessage))
+		return true;
+	if (answerMessageId != messageId)
+		return true;
+	if (answerMessage != "OK")
+		return true;
 
     popMessage();
 
@@ -53,7 +63,7 @@ namespace NewsHub
     return true;
   }
 
-  bool ClientQueueThreadLoop::nextMessage(unsigned int & messageId, std::string message)
+  bool ClientQueueThreadLoop::nextMessage(unsigned int & messageId, std::string & message)
   {
     Message msgStruct;
 

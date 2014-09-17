@@ -40,6 +40,7 @@ namespace NewsHub
     if (send(socket, message.c_str(), header.length(), 0) < 0)
       return false;
 
+	std::cout << "Written " << messageId << ": " << message << std::endl;
     return true;
   }
 

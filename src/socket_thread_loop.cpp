@@ -22,6 +22,9 @@ namespace NewsHub
     if (!socket.Read(messageId, res))
       return false;
 
+	if (!socket.Write(messageId, "OK"))
+		return true;
+
     newsDelegate.Message(socket, messageId, res);
 
     return true;
