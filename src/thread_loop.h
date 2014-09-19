@@ -2,6 +2,8 @@
 
 #include <pthread.h>
 
+#include "config.h"
+
 namespace NewsHub
 {
   class ThreadLoop

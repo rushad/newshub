@@ -9,6 +9,8 @@
 
 #include <list>
 
+#include "config.h"
+
 namespace NewsHub
 {
   class ServerThreadLoop : public ThreadLoop

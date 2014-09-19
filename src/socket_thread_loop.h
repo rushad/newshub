@@ -5,6 +5,8 @@
 #include "news_delegate.h"
 #include "socket.h"
 
+#include "config.h"
+
 namespace NewsHub
 {
   class SocketThreadLoop : public ThreadLoop

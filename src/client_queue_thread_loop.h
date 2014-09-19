@@ -7,6 +7,8 @@
 
 #include <queue>
 
+#include "config.h"
+
 namespace NewsHub
 {
   class ClientQueueThreadLoop : public ThreadLoop

@@ -28,7 +28,7 @@ namespace NewsHub
 
     SOCKET sock;
     if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
-      throw std::exception("socket() failed");
+      throw Error("socket() failed");
 
     struct sockaddr_in serverAddr;
     serverAddr.sin_family = AF_INET;

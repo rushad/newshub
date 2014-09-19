@@ -11,7 +11,7 @@ namespace NewsHub
     pthread_mutex_init(&mutexStop, 0);
 
     if(pthread_create(&threadId, 0, run, this))
-      throw std::exception("pthread_create() failed");
+      throw Error("pthread_create() failed");
   }
 
   bool ThreadLoop::isStopped() const

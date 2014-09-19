@@ -5,6 +5,8 @@
 
 #include <string>
 
+#include "config.h"
+
 namespace NewsHub
 {
   class UdpClient : public Client

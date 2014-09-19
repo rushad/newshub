@@ -7,7 +7,7 @@ namespace NewsHub
   TcpServer::TcpServer(int port, int backLog)
   {
     if ((serverSocket = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-      throw std::exception("socket() failed");
+      throw Error("socket() failed");
 
     struct sockaddr_in serverAddr;
     serverAddr.sin_family = AF_INET;
@@ -17,13 +17,13 @@ namespace NewsHub
     if (bind(serverSocket, (struct sockaddr *) &serverAddr, sizeof(serverAddr)) < 0)
     {
       closesocket(serverSocket);
-      throw std::exception("bind() failed");
+      throw Error("bind() failed");
     }
 
     if (listen(serverSocket, backLog) < 0)
     {
       closesocket(serverSocket);
-      throw std::exception("listen() failed");
+      throw Error("listen() failed");
     }
   }
 
@@ -45,12 +45,12 @@ namespace NewsHub
 
     int res = select((int)serverSocket + 1, &fds, 0, 0, &tv);
     if (res < 0)
-      throw std::exception("select() failed");
+      throw Error("select() failed");
     if (!res)
       return 0;
 
     struct sockaddr_in clientAddr;
-    int addrLen = sizeof(clientAddr);
+    socklen_t addrLen = sizeof(clientAddr);
     SOCKET connSocket = accept(serverSocket, (struct sockaddr *) &clientAddr, &addrLen);
 
     return new TcpSocket(connSocket);

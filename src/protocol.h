@@ -1,5 +1,7 @@
 #pragma once
 
+#include "config.h"
+
 namespace NewsHub
 {
   const char PacketSignature[] = "NH";
@@ -14,10 +16,10 @@ namespace NewsHub
     PacketHeader()
     {
     }
-    PacketHeader(unsigned __int32 _id, const std::string & data)
+    PacketHeader(UINT32 _id, const std::string & data)
     {
       if (data.size() > 0xffff)
-        throw std::exception("Too large packet size");
+        throw Error("Too large packet size");
 
       memcpy(sig, PacketSignature, sizeof(sig));
       len = htons((int)data.size());

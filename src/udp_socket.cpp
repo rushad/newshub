@@ -65,7 +65,7 @@ namespace NewsHub
       tv.tv_usec = (timeSlice % 1000) * 1000;
 
       if ((res = select((int)socket + 1, &rfds, 0, 0, &tv)) < 0)
-        throw std::exception("select() failed");
+        throw Error("select() failed");
 
       if (msec)
       {
@@ -83,10 +83,10 @@ namespace NewsHub
     if (!waitForData(defUdpSocketSlice, msec))
       return false;
 
-    int fromLen = sizeof(peerAddr);
+    socklen_t fromLen = sizeof(peerAddr);
     int res = recvfrom(socket, (char*)&header, sizeof(header), 0, (struct sockaddr*)&peerAddr, &fromLen);
     if (res < 0)
-      throw std::exception("recvfrom() failed");
+      throw Error("recvfrom() failed");
 
     if (res != sizeof(PacketHeader))
       return false;
@@ -111,7 +111,7 @@ namespace NewsHub
 
       int res = recvfrom(socket, data + read, len - read, 0, 0, 0);
       if (res < 0)
-        throw std::exception("recvfrom() failed");
+        throw Error("recvfrom() failed");
 
       read += res;
 

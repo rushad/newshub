@@ -3,6 +3,8 @@
 #include "server.h"
 #include "socket.h"
 
+#include "config.h"
+
 namespace NewsHub
 {
   class UdpServer : public Server

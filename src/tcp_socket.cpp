@@ -48,9 +48,9 @@ namespace NewsHub
   void TcpSocket::SockAddr(std::string & ip, int & port) const
   {
     struct sockaddr_in addr;
-    int len = sizeof(addr);
+    socklen_t len = sizeof(addr);
     if (getsockname(socket, (struct sockaddr*)&addr, &len) < 0)
-      throw std::exception("getsockname() failed");
+      throw Error("getsockname() failed");
     ip = inet_ntoa(addr.sin_addr);
     port = ntohs(addr.sin_port);
   }
@@ -58,9 +58,9 @@ namespace NewsHub
   void TcpSocket::PeerAddr(std::string & ip, int & port) const
   {
     struct sockaddr_in addr;
-    int len = sizeof(addr);
+    socklen_t len = sizeof(addr);
     if (getpeername(socket, (struct sockaddr*)&addr, &len) < 0)
-      throw std::exception("getpeername() failed");
+      throw Error("getpeername() failed");
     ip = inet_ntoa(addr.sin_addr);
     port = ntohs(addr.sin_port);
   }
@@ -84,7 +84,7 @@ namespace NewsHub
       tv.tv_usec = (timeSlice % 1000) * 1000;
 
       if ((res = select((int)socket + 1, &rfds, 0, 0, &tv)) < 0)
-        throw std::exception("select() failed");
+        throw Error("select() failed");
 
       if (msec)
       {
@@ -104,7 +104,7 @@ namespace NewsHub
 
     int res = recv(socket, (char*)&header, sizeof(header), 0);
     if (res < 0)
-      throw std::exception("recv() failed");
+      throw Error("recv() failed");
 
     if (res != sizeof(PacketHeader))
       return false;
@@ -129,7 +129,7 @@ namespace NewsHub
 
       int res = recv(socket, data + read, len - read, 0);
       if (res < 0)
-        throw std::exception("recv() failed");
+        throw Error("recv() failed");
 
       read += res;
 

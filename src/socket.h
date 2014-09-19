@@ -2,11 +2,9 @@
 
 #include <pthread.h>
 
-#ifdef WIN32
-#include <winsock.h>
-#endif
-
 #include <string>
+
+#include "config.h"
 
 namespace NewsHub
 {

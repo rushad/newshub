@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "config.h"
+
 namespace NewsHub
 {
   const int defUdpSocketSlice = 100;

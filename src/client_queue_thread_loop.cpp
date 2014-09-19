@@ -2,6 +2,10 @@
 
 #include "protocol.h"
 
+#ifndef WIN32
+#include <unistd.h>
+#endif
+
 namespace NewsHub
 {
   ClientQueueThreadLoop::ClientQueueThreadLoop(Client & _client, DeliveryDelegate & _deliveryDelegate)
