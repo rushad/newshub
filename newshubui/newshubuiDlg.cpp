@@ -124,6 +124,9 @@ BOOL CNewsHubDlg::OnInitDialog()
   CEdit* pPort = (CEdit*)GetDlgItem(IDC_PORT);
   pPort->SetWindowText(CString("12345"));
 
+  CEdit* pTimeout = (CEdit*)GetDlgItem(IDC_TIMEOUT);
+  pTimeout->SetWindowText(CString("1"));
+
   CButton* pSendDeliveryConfirmation = (CButton*)GetDlgItem(IDC_SEND_DELIVERY_CONFIRMATION);
   pSendDeliveryConfirmation->SetCheck(BST_CHECKED);
 
@@ -253,11 +256,14 @@ void CNewsHubDlg::OnBnClickedClientStart()
 {
   CEdit* pPort = (CEdit*)GetDlgItem(IDC_PORT);
   CEdit* pHost = (CEdit*)GetDlgItem(IDC_HOST);
+  CEdit* pTimeout = (CEdit*)GetDlgItem(IDC_TIMEOUT);
 
-  CString host, strPort;
+  CString host, strPort, strTimeout;
   pHost->GetWindowText(host);
   pPort->GetWindowText(strPort);
+  pTimeout->GetWindowText(strTimeout);
   int port = atoi(CT2CA(strPort));
+  int timeout = atoi(CT2CA(strTimeout));
 
   CButton* pClientTcp = (CButton*)GetDlgItem(IDC_CLIENT_TCP);
   bool bTcp = (pClientTcp->GetCheck() == BST_CHECKED);
@@ -271,7 +277,7 @@ void CNewsHubDlg::OnBnClickedClientStart()
     else
       client = new NewsHub::UdpClient(std::string(CT2CA(host)), port);
 
-    clientLoop = new ClientLoop(client, new NewsHub::ClientQueueThreadLoop(*client, *this));
+    clientLoop = new ClientLoop(client, new NewsHub::ClientQueueThreadLoop(*client, *this, timeout * 1000));
   }
   catch (std::exception & e)
   {

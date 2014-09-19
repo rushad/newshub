@@ -2,8 +2,14 @@
 
 #ifdef WIN32
 
-typedef unsigned __int32 UINT 32;
+typedef unsigned __int32 UINT32;
+
+#include <exception>
 typedef std::exception Error;
+
+#include <winsock2.h>
+
+typedef int socklen_t;
 
 #else
 

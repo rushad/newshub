@@ -22,6 +22,8 @@
 #define IDC_CLIENT_START                1016
 #define IDC_RUNNING_CLIENTS             1017
 #define IDC_FINISH_CLIENT               1018
+#define IDC_PORT2                       1018
+#define IDC_TIMEOUT                     1018
 
 // Next default values for new objects
 // 

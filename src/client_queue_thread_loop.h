@@ -11,10 +11,12 @@
 
 namespace NewsHub
 {
+  const unsigned int defTimeout = 1000;
+
   class ClientQueueThreadLoop : public ThreadLoop
   {
   public:
-    ClientQueueThreadLoop(Client & _client, DeliveryDelegate & _deliveryDelegate);
+    ClientQueueThreadLoop(Client & _client, DeliveryDelegate & _deliveryDelegate, unsigned int _timeout = defTimeout);
     ~ClientQueueThreadLoop();
     
     void AddMessage(const unsigned int messageId, const std::string & message);
@@ -27,6 +29,7 @@ namespace NewsHub
 
     Client & client;
     DeliveryDelegate & deliveryDelegate;
+    unsigned int timeout;
 
     Socket* socket;
 

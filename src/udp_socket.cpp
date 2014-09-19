@@ -85,7 +85,7 @@ namespace NewsHub
 
     socklen_t fromLen = sizeof(peerAddr);
     int res = recvfrom(socket, (char*)&header, sizeof(header), 0, (struct sockaddr*)&peerAddr, &fromLen);
-    if (res < 0)
+    if ((res < 0) && errno)
       throw Error("recvfrom() failed");
 
     if (res != sizeof(PacketHeader))

@@ -8,9 +8,10 @@
 
 namespace NewsHub
 {
-  ClientQueueThreadLoop::ClientQueueThreadLoop(Client & _client, DeliveryDelegate & _deliveryDelegate)
+  ClientQueueThreadLoop::ClientQueueThreadLoop(Client & _client, DeliveryDelegate & _deliveryDelegate, unsigned int _timeout)
     : client(_client),
       deliveryDelegate(_deliveryDelegate),
+      timeout(_timeout),
       socket(0)
   {
     pthread_mutex_init(&mutexQueue, 0);
@@ -60,7 +61,7 @@ namespace NewsHub
 
 	  unsigned int answerMessageId;
 	  std::string answerMessage;
-	  if (!socket->Read(answerMessageId, answerMessage, 1000))
+	  if (!socket->Read(answerMessageId, answerMessage, timeout))
 		  return true;
 	  if (answerMessageId != messageId)
 		  return true;
