@@ -1,9 +1,9 @@
 #pragma once
 
-
 namespace NewsHub
 {
   const char PacketSignature[] = "NH";
+  const char ConfirmationString[] = "OK";
 
 #pragma pack(push, 1)
   struct PacketHeader

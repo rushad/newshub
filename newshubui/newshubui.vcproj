@@ -202,10 +202,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\serverLoop.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -224,6 +220,10 @@
 						UsePrecompiledHeader="1"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\utils.cpp"
+				>
 			</File>
 		</Filter>
 		<Filter
@@ -244,11 +244,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\serverLoop.h"
+				RelativePath=".\stdafx.h"
 				>
 			</File>
 			<File
-				RelativePath=".\stdafx.h"
+				RelativePath=".\utils.h"
 				>
 			</File>
 		</Filter>

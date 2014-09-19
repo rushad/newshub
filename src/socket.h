@@ -16,12 +16,11 @@ namespace NewsHub
     Socket();
     virtual ~Socket();
 
-    virtual bool Read(unsigned int & messageId, std::string & message) = 0;
+    virtual bool Read(unsigned int & messageId, std::string & message, int msec = 0) = 0;
     virtual bool Write(const unsigned int messageId, const std::string & message) = 0;
+    virtual std::string Type() const = 0;
 
-	void Stop();
-
-  protected:
+	  void Stop();
     bool IsStopped() const;
 
   private:

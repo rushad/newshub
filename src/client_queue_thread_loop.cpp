@@ -1,11 +1,12 @@
 #include "client_queue_thread_loop.h"
 
-#include <iostream>
+#include "protocol.h"
 
 namespace NewsHub
 {
-  ClientQueueThreadLoop::ClientQueueThreadLoop(Client & _client)
+  ClientQueueThreadLoop::ClientQueueThreadLoop(Client & _client, DeliveryDelegate & _deliveryDelegate)
     : client(_client),
+      deliveryDelegate(_deliveryDelegate),
       socket(0)
   {
     pthread_mutex_init(&mutexQueue, 0);
@@ -26,8 +27,6 @@ namespace NewsHub
     pthread_mutex_lock(&mutexQueue);
     queue.push(msgStruct);
     pthread_mutex_unlock(&mutexQueue);
-
-    std::cout << "Added " << messageId << ": " << message << std::endl;
   }
 
   bool ClientQueueThreadLoop::LoopBody()
@@ -36,7 +35,14 @@ namespace NewsHub
     std::string message;
 
     if (!nextMessage(messageId, message))
+    {
+#ifdef WIN32
+      Sleep(1);
+#else
+      sleep(1);
+#endif
       return true;
+    }
 
     if (!socket && !(socket = client.Connect()))
       return true;
@@ -45,21 +51,21 @@ namespace NewsHub
     {
       delete socket;
       socket = 0;
-	  return true;
+	    return true;
     }
 
-	unsigned int answerMessageId;
-	std::string answerMessage;
-	if (!socket->Read(answerMessageId, answerMessage))
-		return true;
-	if (answerMessageId != messageId)
-		return true;
-	if (answerMessage != "OK")
-		return true;
+	  unsigned int answerMessageId;
+	  std::string answerMessage;
+	  if (!socket->Read(answerMessageId, answerMessage, 1000))
+		  return true;
+	  if (answerMessageId != messageId)
+		  return true;
+	  if (answerMessage != ConfirmationString)
+		  return true;
 
     popMessage();
 
-    std::cout << "Sent " << messageId << ": " << message << std::endl;
+    deliveryDelegate.MessageDelivered(this, *socket, messageId, message);
     return true;
   }
 
@@ -79,7 +85,6 @@ namespace NewsHub
     messageId = msgStruct.id;
     message = msgStruct.message;
 
-    std::cout << "Fetched " << messageId << ": " << message << std::endl;
     return true;
   }
 
@@ -89,5 +94,4 @@ namespace NewsHub
     queue.pop();
     pthread_mutex_unlock(&mutexQueue);
   }
-
 }

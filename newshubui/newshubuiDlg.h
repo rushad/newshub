@@ -11,14 +11,15 @@
 #include <map>
 
 // CNewsHubDlg dialog
-class CNewsHubDlg : public CDialog, NewsHub::NewsDelegate
+class CNewsHubDlg : public CDialog, NewsHub::NewsDelegate, NewsHub::DeliveryDelegate
 {
 // Construction
 public:
 	CNewsHubDlg(CWnd* pParent = NULL);	// standard constructor
   ~CNewsHubDlg();
 
-  virtual void Message(const NewsHub::Socket & socket, const unsigned int messageId, const std::string & message);
+  virtual bool Message(const NewsHub::Socket & socket, const unsigned int messageId, const std::string & message);
+  virtual void MessageDelivered(NewsHub::ClientQueueThreadLoop* queue, const NewsHub::Socket & socket, const unsigned int messageId, const std::string & message);
 
   // Dialog Data
 	enum { IDD = IDD_NEWSHUBUI_DIALOG };
@@ -40,14 +41,12 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 private:
-  std::map<CString, NewsHub::ClientQueueThreadLoop*> clientQueues;
-  unsigned int messageId;
-
   void onClose();
-  CString getDestinationId() const;
 
 public:
   afx_msg void OnBnClickedServerStart();
-  afx_msg void OnBnClickedFinish();
+  afx_msg void OnBnClickedServerFinish();
+  afx_msg void OnBnClickedClientStart();
+  afx_msg void OnBnClickedClientFinish();
   afx_msg void OnBnClickedSend();
 };

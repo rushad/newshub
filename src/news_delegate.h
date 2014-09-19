@@ -13,6 +13,6 @@ namespace NewsHub
     {
     }
 
-    virtual void Message(const Socket & socket, const unsigned int messageId, const std::string & message) = 0;
+    virtual bool Message(const Socket & socket, const unsigned int messageId, const std::string & message) = 0;
   };
 }

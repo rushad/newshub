@@ -17,7 +17,7 @@ namespace NewsHub
 
   private:
     TcpServer();
-    TcpServer(const TcpServer &);
+
     SOCKET serverSocket;
   };
 }

@@ -1,5 +1,7 @@
 #include "socket_thread_loop.h"
 
+#include "protocol.h"
+
 namespace NewsHub
 {
   SocketThreadLoop::SocketThreadLoop(Socket & _socket, NewsDelegate & _newsDelegate)
@@ -22,10 +24,11 @@ namespace NewsHub
     if (!socket.Read(messageId, res))
       return false;
 
-	if (!socket.Write(messageId, "OK"))
-		return true;
-
-    newsDelegate.Message(socket, messageId, res);
+    if (newsDelegate.Message(socket, messageId, res))
+    {
+	    if (!socket.Write(messageId, ConfirmationString))
+		    return true;
+    }
 
     return true;
   }

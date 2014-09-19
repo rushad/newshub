@@ -3,6 +3,7 @@
 #include "thread_loop.h"
 
 #include "client.h"
+#include "delivery_delegate.h"
 
 #include <queue>
 
@@ -11,7 +12,7 @@ namespace NewsHub
   class ClientQueueThreadLoop : public ThreadLoop
   {
   public:
-    ClientQueueThreadLoop(Client & _client);
+    ClientQueueThreadLoop(Client & _client, DeliveryDelegate & _deliveryDelegate);
     ~ClientQueueThreadLoop();
     
     void AddMessage(const unsigned int messageId, const std::string & message);
@@ -19,7 +20,12 @@ namespace NewsHub
     virtual bool LoopBody();
 
   private:
+    ClientQueueThreadLoop();
+    ClientQueueThreadLoop(const ClientQueueThreadLoop &);
+
     Client & client;
+    DeliveryDelegate & deliveryDelegate;
+
     Socket* socket;
 
     struct Message

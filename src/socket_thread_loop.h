@@ -15,6 +15,9 @@ namespace NewsHub
     virtual bool LoopBody();
 
   private:
+    SocketThreadLoop();
+    SocketThreadLoop(const SocketThreadLoop &);
+
     Socket & socket;
     NewsDelegate & newsDelegate;
   };

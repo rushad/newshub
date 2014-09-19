@@ -14,13 +14,18 @@ namespace NewsHub
   class ServerThreadLoop : public ThreadLoop
   {
   public:
-    ServerThreadLoop(Server & _server, NewsDelegate & _newsDelegate);
+    ServerThreadLoop(Server & _server, NewsDelegate & _newsDelegate, bool _multipleConnections = true);
     ~ServerThreadLoop();
     virtual bool LoopBody();
 
   private:
+    ServerThreadLoop();
+    ServerThreadLoop(const ServerThreadLoop &);
+
     Server & server;
     NewsDelegate & newsDelegate;
+    bool multipleConnections;
+
     std::list<Socket*> sockets;
     std::list<SocketThreadLoop*> socketThreadLoops;
   };

@@ -1,18 +1,18 @@
 #include "server_thread_loop.h"
 #include "socket_thread_loop.h"
 
-#include <iostream>
-
 namespace NewsHub
 {
-  ServerThreadLoop::ServerThreadLoop(Server & _server, NewsDelegate & _newsDelegate)
+  ServerThreadLoop::ServerThreadLoop(Server & _server, NewsDelegate & _newsDelegate, bool _multipleConnections)
     : server(_server),
-      newsDelegate(_newsDelegate)
+      newsDelegate(_newsDelegate),
+      multipleConnections(_multipleConnections)
   {
   }
 
   ServerThreadLoop::~ServerThreadLoop()
   {
+    Finish();
     while (!socketThreadLoops.empty())
     {
       delete socketThreadLoops.front();
@@ -21,7 +21,6 @@ namespace NewsHub
       delete sockets.front();
       sockets.pop_front();
     }
-    Finish();
   }
 
   bool ServerThreadLoop::LoopBody()
@@ -36,6 +35,6 @@ namespace NewsHub
       socketThreadLoops.push_back(socketThreadLoop);
     }
 
-    return true;
+    return multipleConnections;
   }
 }

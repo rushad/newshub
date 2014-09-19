@@ -1,19 +1,15 @@
 #include "socket.h"
 
-#include <iostream>
-
 namespace NewsHub
 {
   Socket::Socket()
     : stopped(false)
   {
-//    std::cout << "Socket()" << std::endl;
     pthread_mutex_init(&mutexStop, 0);
   }
 
   Socket::~Socket()
   {
-//    std::cout << "~Socket()" << std::endl;
     pthread_mutex_destroy(&mutexStop);
   }
 

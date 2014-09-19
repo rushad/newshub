@@ -7,10 +7,10 @@
 
 namespace NewsHub
 {
-  class TcpClient : public Client
+  class UdpClient : public Client
   {
   public:
-    TcpClient(const std::string & _host, int _port);
+    UdpClient(const std::string & _host, int _port);
 
     std::string Host() const;
     int Port() const;
@@ -18,7 +18,7 @@ namespace NewsHub
     virtual Socket* Connect();
 
   private:
-    TcpClient();
+    UdpClient();
 
     std::string host;
     int port;

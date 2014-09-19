@@ -5,13 +5,16 @@
 #include "newshubui.h"
 #include "newshubuiDlg.h"
 
-#include "serverLoop.h"
+#include "utils.h"
 
 #include "client_queue_thread_loop.h"
 #include "server_thread_loop.h"
 #include "tcp_client.h"
 #include "tcp_server.h"
 #include "tcp_socket.h"
+#include "udp_client.h"
+#include "udp_server.h"
+#include "udp_socket.h"
 
 #include <iostream>
 
@@ -22,8 +25,7 @@
 // CNewsHubDlg dialog
 
 CNewsHubDlg::CNewsHubDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CNewsHubDlg::IDD, pParent),
-    messageId(0)
+	: CDialog(CNewsHubDlg::IDD, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -32,19 +34,50 @@ CNewsHubDlg::~CNewsHubDlg()
 {
 }
 
-void CNewsHubDlg::Message(const NewsHub::Socket & socket, const unsigned int messageId, const std::string & message)
+bool CNewsHubDlg::Message(const NewsHub::Socket & socket, const unsigned int messageId, const std::string & message)
 {
   CListBox* pReceivedMessages = (CListBox*)GetDlgItem(IDC_RECEIVED_MESSAGES);
   CString str;
-  std::string from, to;
-  int fromPort, toPort;
-  NewsHub::TcpSocket* tcpSocket = (NewsHub::TcpSocket*)&socket;
-  tcpSocket->SockAddr(to, toPort);
-  tcpSocket->PeerAddr(from, fromPort);
-  str.Format(_T("(From: %s:%d to: %s:%d msgId:%d): %s"), 
-    CString(CA2CT(from.c_str())), fromPort, CString(CA2CT(to.c_str())), toPort, messageId, CString(CA2CT(message.c_str())));
+
+  if (socket.Type() == "TCP")
+  {
+    std::string from, to;
+    int fromPort, toPort;
+    NewsHub::TcpSocket* tcpSocket = (NewsHub::TcpSocket*)&socket;
+    tcpSocket->SockAddr(to, toPort);
+    tcpSocket->PeerAddr(from, fromPort);
+    str.Format(_T("(From: %s:%d to: %s:%d msgId:%d): %s"), 
+      CString(from.c_str()), fromPort, CString(to.c_str()), toPort, messageId, CString(message.c_str()));
+  }
+  else
+  {
+    str.Format(_T("%d: %s"), messageId, CString(message.c_str()));
+  }
+
   int row = pReceivedMessages->AddString(str);
   pReceivedMessages->SetCurSel(row);
+
+  CButton* pSendDeliveryConfirmation = (CButton*)GetDlgItem(IDC_SEND_DELIVERY_CONFIRMATION);
+  return pSendDeliveryConfirmation->GetCheck() == BST_CHECKED;
+}
+
+void CNewsHubDlg::MessageDelivered(NewsHub::ClientQueueThreadLoop* queue, const NewsHub::Socket & socket, const unsigned int messageId, const std::string & message)
+{
+  CListBox* pSentMessages = (CListBox*)GetDlgItem(IDC_SENT_MESSAGES);
+  for (int i = 0; i < pSentMessages->GetCount(); ++i)
+  {
+    MessageInfo* messageInfo = (MessageInfo*)pSentMessages->GetItemDataPtr(i);
+    if ((messageInfo->queue == queue) && (messageInfo->messageId == messageId))
+    {
+      CString str;
+      pSentMessages->GetText(i, str);
+      pSentMessages->DeleteString(i);
+      pSentMessages->InsertString(i, str + _T(": Delivered"));
+      pSentMessages->SetItemDataPtr(i, messageInfo);
+      pSentMessages->SetCurSel(i);
+      break;
+    }
+  }
 }
 
 void CNewsHubDlg::DoDataExchange(CDataExchange* pDX)
@@ -57,7 +90,8 @@ BEGIN_MESSAGE_MAP(CNewsHubDlg, CDialog)
 	ON_WM_QUERYDRAGICON()
 	//}}AFX_MSG_MAP
   ON_BN_CLICKED(IDC_SERVER_START, &CNewsHubDlg::OnBnClickedServerStart)
-  ON_BN_CLICKED(IDC_FINISH, &CNewsHubDlg::OnBnClickedFinish)
+  ON_BN_CLICKED(IDC_SERVER_FINISH, &CNewsHubDlg::OnBnClickedServerFinish)
+  ON_BN_CLICKED(IDC_CLIENT_START, &CNewsHubDlg::OnBnClickedClientStart)
   ON_BN_CLICKED(IDC_SEND, &CNewsHubDlg::OnBnClickedSend)
 END_MESSAGE_MAP()
 
@@ -89,6 +123,9 @@ BOOL CNewsHubDlg::OnInitDialog()
 
   CEdit* pPort = (CEdit*)GetDlgItem(IDC_PORT);
   pPort->SetWindowText(CString("12345"));
+
+  CButton* pSendDeliveryConfirmation = (CButton*)GetDlgItem(IDC_SEND_DELIVERY_CONFIRMATION);
+  pSendDeliveryConfirmation->SetCheck(BST_CHECKED);
 
   return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -143,21 +180,19 @@ void CNewsHubDlg::onClose()
     delete serverLoop;
   }
 
-/*  std::map<CString, NewsHub::Socket*>::iterator itSocket;
-  for (itSocket = clientSockets.begin(); itSocket != clientSockets.end(); itSocket++)
-    delete itSocket->second;*/
-}
+  CListBox* pRunningClients = (CListBox*)GetDlgItem(IDC_RUNNING_CLIENTS);
+  for (int i = 0; i < pRunningClients->GetCount(); ++i)
+  {
+    ClientLoop* clientLoop = (ClientLoop*)pRunningClients->GetItemDataPtr(i);
+    delete clientLoop;
+  }
 
-CString CNewsHubDlg::getDestinationId() const
-{
-  CEdit* pHost = (CEdit*)GetDlgItem(IDC_HOST);
-  CEdit* pPort = (CEdit*)GetDlgItem(IDC_PORT);
-
-  CString host, port;
-  pHost->GetWindowText(host);
-  pPort->GetWindowText(port);
-
-  return CString("TCP:") + host + CString(":") + port;
+  CListBox* pSentMessages = (CListBox*)GetDlgItem(IDC_SENT_MESSAGES);
+  for (int i = 0; i < pSentMessages->GetCount(); ++i)
+  {
+    MessageInfo* messageInfo = (MessageInfo*)pSentMessages->GetItemDataPtr(i);
+    delete messageInfo;
+  }
 }
 
 // The system calls this function to obtain the cursor to display while the user drags
@@ -173,12 +208,20 @@ void CNewsHubDlg::OnBnClickedServerStart()
   CEdit* pPort = (CEdit*)GetDlgItem(IDC_SERVER_PORT);
   CString strPort;
   pPort->GetWindowText(strPort);
+  int port = atoi(CT2CA(strPort));
+
+  CButton* pServerTcp = (CButton*)GetDlgItem(IDC_SERVER_TCP);
+  bool bTcp = (pServerTcp->GetCheck() == BST_CHECKED);
 
   ServerLoop* serverLoop;
   try
   {
-    NewsHub::TcpServer* server = new NewsHub::TcpServer(atoi(CT2CA(strPort)));
-    serverLoop = new ServerLoop(server, new NewsHub::ServerThreadLoop(*server, *this));
+    NewsHub::Server* server;
+    if (bTcp)
+      server = new NewsHub::TcpServer(port);
+    else
+      server = new NewsHub::UdpServer(port);
+    serverLoop = new ServerLoop(server, new NewsHub::ServerThreadLoop(*server, *this, bTcp));
   }
   catch (std::exception & e)
   {
@@ -186,14 +229,14 @@ void CNewsHubDlg::OnBnClickedServerStart()
     return;
   }
 
-  CString serverDescription = CString("TCP server is listening on port ") + strPort; 
+  CString serverDescription = CString(bTcp?"TCP":"UDP") + CString(" server is listening on port ") + strPort; 
 
   CListBox* pRunningServers = (CListBox*)GetDlgItem(IDC_RUNNING_SERVERS);
   int row = pRunningServers->AddString(serverDescription);
   pRunningServers->SetItemDataPtr(row, serverLoop);
 }
 
-void CNewsHubDlg::OnBnClickedFinish()
+void CNewsHubDlg::OnBnClickedServerFinish()
 {
   CListBox* pRunningServers = (CListBox*)GetDlgItem(IDC_RUNNING_SERVERS);
   
@@ -206,41 +249,74 @@ void CNewsHubDlg::OnBnClickedFinish()
   }
 }
 
+void CNewsHubDlg::OnBnClickedClientStart()
+{
+  CEdit* pPort = (CEdit*)GetDlgItem(IDC_PORT);
+  CEdit* pHost = (CEdit*)GetDlgItem(IDC_HOST);
+
+  CString host, strPort;
+  pHost->GetWindowText(host);
+  pPort->GetWindowText(strPort);
+  int port = atoi(CT2CA(strPort));
+
+  CButton* pClientTcp = (CButton*)GetDlgItem(IDC_CLIENT_TCP);
+  bool bTcp = (pClientTcp->GetCheck() == BST_CHECKED);
+
+  ClientLoop* clientLoop;
+  try
+  {
+    NewsHub::Client* client;
+    if (bTcp)
+      client = new NewsHub::TcpClient(std::string(CT2CA(host)), port);
+    else
+      client = new NewsHub::UdpClient(std::string(CT2CA(host)), port);
+
+    clientLoop = new ClientLoop(client, new NewsHub::ClientQueueThreadLoop(*client, *this));
+  }
+  catch (std::exception & e)
+  {
+    MessageBox(CString(e.what()), _T("Exception"), MB_OK);
+    return;
+  }
+
+  CString clientDescription = CString(bTcp?"TCP":"UDP") + CString(" client to host ") + host + CString(" on port ") + strPort; 
+
+  CListBox* pRunningClients = (CListBox*)GetDlgItem(IDC_RUNNING_CLIENTS);
+  int row = pRunningClients->AddString(clientDescription);
+  pRunningClients->SetItemDataPtr(row, clientLoop);
+}
+
 void CNewsHubDlg::OnBnClickedSend()
 {
-  CString destinationId = getDestinationId();
-  NewsHub::ClientQueueThreadLoop *queue;
+  CListBox* pRunningClients = (CListBox*)GetDlgItem(IDC_RUNNING_CLIENTS);
 
-  std::map<CString, NewsHub::ClientQueueThreadLoop*>::iterator itQueue = clientQueues.find(destinationId);
-  if (itQueue == clientQueues.end())
+  int row = pRunningClients->GetCurSel();
+  if (row == LB_ERR)
   {
-    CEdit* pHost = (CEdit*)GetDlgItem(IDC_HOST);
-    CEdit* pPort = (CEdit*)GetDlgItem(IDC_PORT);
-
-    CString host, port;
-    pHost->GetWindowText(host);
-    pPort->GetWindowText(port);
-
-    try
-    {
-      NewsHub::TcpClient* client = new NewsHub::TcpClient(std::string(CT2CA(host)), atoi(CT2CA(port)));
-      queue = new NewsHub::ClientQueueThreadLoop(*client);
-    }
-    catch (std::exception & e)
-    {
-      MessageBox(CString(e.what()), _T("Exception"), MB_OK);
-      return;
-    }
-
-    itQueue = clientQueues.insert(std::pair<CString, NewsHub::ClientQueueThreadLoop*>(destinationId, queue)).first;
-  }
-  else
-  {
-    queue = itQueue->second;
+    MessageBox(_T("Please select one of running clients to send message through"), _T("No client selected"), MB_OK);
+    return;
   }
 
   CEdit* pMessage = (CEdit*)GetDlgItem(IDC_MESSAGE);
   CString message;
   pMessage->GetWindowText(message);
-  queue->AddMessage(++messageId, std::string(CT2CA(message)));
+
+  ClientLoop* clientLoop = (ClientLoop*)pRunningClients->GetItemDataPtr(row);
+  unsigned int messageId = clientLoop->nextMessageId();
+  clientLoop->Queue()->AddMessage(messageId, std::string(CT2CA(message)));
+
+  CListBox* pSentMessages = (CListBox*)GetDlgItem(IDC_SENT_MESSAGES);
+  NewsHub::TcpClient* tcpClient = (NewsHub::TcpClient*)clientLoop->Client();
+  CString str;
+  str.Format(_T("(To: %s:%d msgId:%d): %s"), 
+    CString(tcpClient->Host().c_str()), tcpClient->Port(), messageId, message);
+
+  row = pSentMessages->AddString(str);
+
+  MessageInfo* messageInfo = new MessageInfo;
+  messageInfo->queue = clientLoop->Queue();
+  messageInfo->messageId = messageId;
+  pSentMessages->SetItemDataPtr(row, messageInfo);
+
+  pSentMessages->SetCurSel(row);
 }

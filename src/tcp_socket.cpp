@@ -1,8 +1,5 @@
 #include "tcp_socket.h"
 
-#include <io.h>
-#include <iostream>
-
 namespace NewsHub
 {
   TcpSocket::TcpSocket(SOCKET _socket)
@@ -15,10 +12,10 @@ namespace NewsHub
     closesocket(socket);
   }
 
-  bool TcpSocket::Read(unsigned int & messageId, std::string & message)
+  bool TcpSocket::Read(unsigned int & messageId, std::string & message, int msec)
   {
     PacketHeader header;
-    if (!readHeader(header))
+    if (!readHeader(header, msec))
       return false;
 
     bool ok;
@@ -40,8 +37,12 @@ namespace NewsHub
     if (send(socket, message.c_str(), header.length(), 0) < 0)
       return false;
 
-	std::cout << "Written " << messageId << ": " << message << std::endl;
     return true;
+  }
+
+  std::string TcpSocket::Type() const
+  {
+    return "TCP";
   }
 
   void TcpSocket::SockAddr(std::string & ip, int & port) const
@@ -64,11 +65,12 @@ namespace NewsHub
     port = ntohs(addr.sin_port);
   }
 
-  bool TcpSocket::waitForData(int msec)
+  bool TcpSocket::waitForData(int timeSlice, int msec)
   {
     fd_set rfds;
     struct timeval tv;
 
+    int waiting = 0;
     int res;
     do
     {
@@ -78,20 +80,26 @@ namespace NewsHub
       FD_ZERO(&rfds);
       FD_SET(socket, &rfds);
 
-      tv.tv_sec = msec / 1000;
-      tv.tv_usec = (msec % 1000) * 1000;
+      tv.tv_sec = timeSlice / 1000;
+      tv.tv_usec = (timeSlice % 1000) * 1000;
 
       if ((res = select((int)socket + 1, &rfds, 0, 0, &tv)) < 0)
         throw std::exception("select() failed");
 
+      if (msec)
+      {
+        waiting += timeSlice;
+        if (waiting >= msec)
+          return false;
+      }
     } while (!res);
 
     return true;
   }
 
-  bool TcpSocket::readHeader(PacketHeader & header)
+  bool TcpSocket::readHeader(PacketHeader & header, int msec)
   {
-    if (!waitForData(defTcpSocketTimeout))
+    if (!waitForData(defTcpSocketSlice, msec))
       return false;
 
     int res = recv(socket, (char*)&header, sizeof(header), 0);
@@ -114,9 +122,9 @@ namespace NewsHub
 
     ok = false;
 
-    do 
+    while (read < len)
     {
-      if (!waitForData(defTcpSocketTimeout))
+      if (!waitForData(defTcpSocketSlice, 0))
         return "";
 
       int res = recv(socket, data + read, len - read, 0);
@@ -125,7 +133,7 @@ namespace NewsHub
 
       read += res;
 
-    } while (read < len);
+    }
 
     if (read != len)
       return "";
@@ -133,5 +141,4 @@ namespace NewsHub
     ok = true;
     return std::string(data, read);
   }
-
 }

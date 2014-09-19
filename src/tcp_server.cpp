@@ -1,7 +1,6 @@
 #include "tcp_server.h"
-#include "tcp_socket.h"
 
-#include <exception>
+#include "tcp_socket.h"
 
 namespace NewsHub
 {

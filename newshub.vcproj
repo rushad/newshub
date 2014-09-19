@@ -198,6 +198,18 @@
 				RelativePath=".\src\thread_loop.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\src\udp_client.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\udp_server.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\udp_socket.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -210,6 +222,10 @@
 			</File>
 			<File
 				RelativePath=".\src\client_queue_thread_loop.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\delivery_delegate.h"
 				>
 			</File>
 			<File
@@ -250,6 +266,18 @@
 			</File>
 			<File
 				RelativePath=".\src\thread_loop.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\udp_client.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\udp_server.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\udp_socket.h"
 				>
 			</File>
 		</Filter>

@@ -36,12 +36,18 @@ namespace NewsHub
 
     while(!loop->isStopped())
     {
-      if(!loop->LoopBody())
+      bool success = false;
+      try
       {
-        break;
+        success = loop->LoopBody();
       }
+      catch (std::exception & e)
+      {
+        std::cerr << "Exception in thread: '" << e.what() << "' (stopped) " << std::endl;
+      }
+      if (!success)
+        break;
     }
-
     return 0;
   }
 

@@ -1,4 +1,5 @@
 #include "tcp_client.h"
+
 #include "tcp_socket.h"
 
 namespace NewsHub
@@ -7,6 +8,16 @@ namespace NewsHub
     : host(_host),
       port(_port)
   {
+  }
+
+  std::string TcpClient::Host() const
+  {
+    return host;
+  }
+
+  int TcpClient::Port() const
+  {
+    return port;
   }
 
   Socket* TcpClient::Connect()
@@ -32,5 +43,4 @@ namespace NewsHub
 
     return new TcpSocket(clientSocket);  
   }
-
 }
