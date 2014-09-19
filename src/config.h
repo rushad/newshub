@@ -17,6 +17,7 @@ typedef int socklen_t;
 #include <netdb.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
 
 #include <string>
 
